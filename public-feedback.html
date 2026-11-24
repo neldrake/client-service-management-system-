@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#102a43">
+  <meta name="referrer" content="no-referrer">
+  <title>Client feedback | BIA West District Assembly</title>
+  <style>
+    :root{font-family:"Segoe UI",Arial,sans-serif;color:#172b4d;background:#f4f7fb;font-synthesis:none}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;padding:28px 16px}
+    main{max-width:760px;margin:0 auto}
+    .brand{color:#667085;font-size:13px;font-weight:650;margin:4px 0 16px}
+    .card{background:#fff;border:1px solid #e4e9f0;border-radius:16px;box-shadow:0 6px 24px #102a4312;overflow:hidden}
+    header{background:#102a43;color:#fff;padding:24px 28px}
+    header h1{font-size:23px;margin:0 0 7px}
+    header p{color:#d5e0e9;margin:0}
+    form{padding:24px 28px}
+    .intro{padding:12px 14px;margin:0 0 20px;background:#f3f8fc;border:1px solid #cfe0ee;border-radius:9px;color:#35566e;font-size:13px}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+    .group{min-width:0}
+    .wide{grid-column:1/-1}
+    label,.label{display:block;font-weight:700;font-size:13px;margin:0 0 7px}
+    input,select,textarea{width:100%;border:1px solid #d5dde7;border-radius:8px;padding:10px 11px;background:#fff;color:#172b4d;font:inherit}
+    input[readonly]{background:#f7f9fc;color:#526174}
+    textarea{min-height:106px;resize:vertical}
+    input:focus,select:focus,textarea:focus{outline:3px solid #2267a81a;border-color:#68a4d5}
+    .required{color:#b42318}
+    .actions{display:flex;justify-content:flex-end;margin-top:22px}
+    button{border:0;border-radius:9px;padding:11px 18px;background:#2267a8;color:#fff;font:inherit;font-weight:700;cursor:pointer}
+    button:hover{background:#19578f}
+    button:disabled{opacity:.65;cursor:wait}
+    .message{margin:0 0 18px;padding:12px 14px;border-radius:9px;font-size:14px}
+    .message[hidden]{display:none}
+    .error{background:#fef0ef;border:1px solid #fecdca;color:#912018}
+    .success{background:#e8f6ee;border:1px solid #b7e3c9;color:#12633e}
+    .unavailable{padding:30px;text-align:center}
+    .unavailable h1{font-size:21px}
+    .unavailable p{color:#667085}
+    footer{padding:15px 20px;text-align:center;color:#667085;font-size:11px}
+    @media(max-width:600px){
+      body{padding:14px 10px}
+      header{padding:20px}
+      header h1{font-size:20px}
+      form{padding:20px}
+      .grid{grid-template-columns:1fr;gap:14px}
+      .wide{grid-column:auto}
+      .actions button{width:100%}
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="brand">BIA West District Assembly · Client Service Unit</div>
+    <section class="card" id="loading" aria-live="polite">
+      <div class="unavailable"><h1>Loading feedback form</h1><p>Please wait while we validate your secure link.</p></div>
+    </section>
+    <section class="card" id="form-card" hidden>
+      <header>
+        <h1>Service feedback</h1>
+        <p>Your feedback helps us improve the service we provide.</p>
+      </header>
+      <form id="feedback-form">
+        <p class="intro">Your response is confidential and will be shared with the Client Service Unit for service improvement.</p>
+        <div class="message error" id="error-message" role="alert" hidden></div>
+        <div class="message success" id="success-message" role="status" hidden></div>
+        <div class="grid">
+          <div class="group"><label for="client-name">Client name</label><input id="client-name" readonly></div>
+          <div class="group"><label for="complaint-id">Complaint reference number</label><input id="complaint-id" readonly></div>
+          <div class="group"><label for="feedback-date">Date of feedback</label><input id="feedback-date" readonly></div>
+          <div class="group"><label for="satisfaction">How satisfied are you with the service received? <span class="required">*</span></label>
+            <select id="satisfaction" required>
+              <option value="">Select a rating</option>
+              <option>Very Satisfied</option><option>Satisfied</option><option>Neutral</option><option>Dissatisfied</option><option>Very Dissatisfied</option>
+            </select>
+          </div>
+          <div class="group"><label for="behaviour">How would you rate the staff's behaviour? <span class="required">*</span></label>
+            <select id="behaviour" required><option value="">Select a rating</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+          </div>
+          <div class="group"><label for="response-time">How would you rate the time taken to resolve your complaint? <span class="required">*</span></label>
+            <select id="response-time" required><option value="">Select a rating</option><option>Excellent</option><option>Good</option><option>Fair</option><option>Poor</option></select>
+          </div>
+          <div class="group wide"><label for="comments">Comments about the service</label><textarea id="comments" maxlength="3000"></textarea></div>
+          <div class="group wide"><label for="suggestions">Suggestions for improvement</label><textarea id="suggestions" maxlength="3000"></textarea></div>
+        </div>
+        <div class="actions"><button id="submit-button" type="submit">Submit feedback</button></div>
+      </form>
+      <footer>This one-time link expires 14 days after it was sent.</footer>
+    </section>
+  </main>
+  <script>
+    const token=location.pathname.slice("/feedback/".length);
+    const loading=document.getElementById("loading");
+    const feedbackCard=document.getElementById("form-card");
+    const form=document.getElementById("feedback-form");
+    const errorMessage=document.getElementById("error-message");
+    const successMessage=document.getElementById("success-message");
+    const submitButton=document.getElementById("submit-button");
+    function showUnavailable(message){
+      loading.innerHTML="";
+      const box=document.createElement("div");
+      box.className="unavailable";
+      const heading=document.createElement("h1");
+      heading.textContent="Feedback link unavailable";
+      const text=document.createElement("p");
+      text.textContent=message;
+      box.append(heading,text);
+      loading.append(box);
+    }
+    async function initialize(){
+      if(!/^[A-Za-z0-9_-]{40,64}$/.test(token)){
+        showUnavailable("This link is invalid. Please contact the Client Service Unit.");
+        return;
+      }
+      try{
+        const response=await fetch("/api/public-feedback/"+encodeURIComponent(token),{cache:"no-store"});
+        const result=await response.json();
+        if(!response.ok)throw new Error(result.error||"This feedback link could not be validated.");
+        document.getElementById("client-name").value=result.client_name;
+        document.getElementById("complaint-id").value=result.complaint_id;
+        document.getElementById("feedback-date").value=new Date().toLocaleDateString(undefined,{day:"2-digit",month:"short",year:"numeric"});
+        loading.hidden=true;
+        feedbackCard.hidden=false;
+      }catch(error){
+        showUnavailable(error.message||"This feedback link could not be validated.");
+      }
+    }
+    form.addEventListener("submit",async event=>{
+      event.preventDefault();
+      errorMessage.hidden=true;
+      successMessage.hidden=true;
+      submitButton.disabled=true;
+      try{
+        const response=await fetch("/api/public-feedback/submit",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          cache:"no-store",
+          body:JSON.stringify({
+            token,
+            satisfaction_rating:document.getElementById("satisfaction").value,
+            staff_behaviour_rating:document.getElementById("behaviour").value,
+            response_time_rating:document.getElementById("response-time").value,
+            comments:document.getElementById("comments").value,
+            suggestions:document.getElementById("suggestions").value
+          })
+        });
+        const result=await response.json();
+        if(!response.ok)throw new Error(result.error||"Your feedback could not be submitted.");
+        successMessage.textContent=result.message;
+        successMessage.hidden=false;
+        form.querySelectorAll("input,select,textarea,button").forEach(control=>control.disabled=true);
+      }catch(error){
+        errorMessage.textContent=error.message||"Your feedback could not be submitted. Please try again.";
+        errorMessage.hidden=false;
+        submitButton.disabled=false;
+      }
+    });
+    initialize();
+  </script>
+</body>
+</html>

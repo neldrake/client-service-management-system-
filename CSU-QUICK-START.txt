@@ -1,0 +1,103 @@
+CSU CLIENT SERVICE MANAGEMENT — SIGN-IN SETUP
+
+First-time setup:
+1. Make sure Python 3 is installed.
+2. Open this folder in File Explorer.
+3. Click the address bar, type cmd, and press Enter.
+4. Start the system:
+       start-csu.bat
+5. On first run, the browser shows "Set up your operator account". Enter your
+   name, choose a username, and set a password of at least 12 characters. The
+   first account is assigned the Operator role and signed in automatically.
+   The password is not written to a file. Use the Show buttons if you want to
+   reveal a password while entering or confirming it.
+6. The app opens at http://127.0.0.1:8765. On later visits, sign in with your
+   operator username and password.
+7. To create a staff account, choose "Create account" on the sign-in page.
+   Staff accounts receive staff access and keep their records separate from
+   other accounts. Operator access is not available through public signup.
+8. To add an account locally without using the sign-in page, stop the server
+   with Ctrl+C, run
+       python server.py create-user
+   and then start the server again. The first account created this way is the
+   operator; subsequent accounts are staff.
+9. To reset an account password locally, stop the server with Ctrl+C and run
+       python server.py reset-password
+   Enter the account username and new password when prompted. The password is
+   entered without being displayed or saved in plain text. The account's
+   existing sessions will be signed out; restart the server afterward.
+
+Sign out using the button in the app's top-right corner. Sessions expire after
+8 hours and are also revoked when the user signs out.
+
+Case progression:
+- New cases start with the Open status. In a valid case form, use "Proceed with
+  case" to advance Open to In Progress, then In Progress to Resolved (Referred
+  advances to In Progress). The action saves the form and updates the case
+  register and dashboard.
+- The form records a resolution date when a case becomes Resolved. Dashboard,
+  Reports, and the Excel case register use that date; "Resolved this month"
+  counts only cases whose current status is Resolved and whose resolution date
+  falls within the current month. Closed cases are not included.
+
+After a client submits the Appendix F satisfaction form, the CSU Feedback
+Assistant displays an automated in-app acknowledgement. Staff can reopen it
+from the feedback register. Replies are template-based and do not replace case
+handling or guarantee follow-up; the assistant is not monitored for emergencies.
+
+Secure client feedback invitations:
+- Add the client's registered email address in a complaint's case record.
+- Only complaints with the exact status "Resolved" can be invited.
+- Configure these server environment variables before starting the server:
+      CSU_PUBLIC_BASE_URL=https://your-public-hostname
+      CSU_SMTP_HOST=your-institutional-smtp-host
+      CSU_SMTP_PORT=587
+      CSU_SMTP_USERNAME=your-smtp-account
+      CSU_SMTP_PASSWORD=your-smtp-password
+      CSU_SMTP_FROM=Client Service Unit <address@example.org>
+  Port 587 uses SMTP with STARTTLS. Set CSU_SMTP_SSL=1 to use implicit TLS
+  (normally port 465). Keep SMTP credentials in server-side environment or an
+  institution-approved secret store; never put them in HTML or JavaScript.
+- The public HTTPS hostname must route to this server (typically through an
+  institution-managed HTTPS reverse proxy). The default server listens only on
+  127.0.0.1, so links using that address work only on the server computer and
+  are not suitable for clients elsewhere. Do not send live invitations until
+  HTTPS routing, DNS, SMTP delivery, and access controls have been verified.
+- The feedback dashboard shows invitation status and responses. Secure links
+  expire after 14 days and accept one submission. If email delivery fails, the
+  invitation remains Pending and can be retried after SMTP configuration is
+  corrected. The Excel export includes a Client Feedback register with client
+  and complaint references, statuses, ratings, comments, and submission time.
+
+The Client assistant page below Reports & export provides local, template-based
+replies for complaint and feedback questions. It can look up case references in
+the signed-in account and links to the complaint and feedback forms. Chat
+messages are not saved or sent to staff; use the forms to record matters for
+review. Do not enter sensitive information, and do not use the assistant for
+emergencies.
+
+Feedback workflow smoke test:
+1. Start the server with a test SMTP account and a publicly reachable HTTPS
+   test hostname (or use localhost and a local SMTP test server).
+2. Sign in, register a complaint with a test client's email, and set its status
+   to Resolved.
+3. Open Client feedback and select Send Feedback Form. Confirm delivery and
+   check the invitation appears as Sent.
+4. Open the received link in a private browser window, submit all three ratings,
+   and confirm the success acknowledgement.
+5. Confirm the dashboard shows Completed, the response date/time and ratings,
+   updated statistics, and the View Feedback action.
+6. Submit the same link again (must be rejected). For expiry testing, set the
+   invitation expiry to a past time in a test database and confirm the link is
+   rejected as expired. A non-existent token must be rejected as invalid.
+
+Important limitations:
+- This server listens only on this computer; it is not configured for a shared
+  office network or internet deployment.
+- Case, visitor, and feedback records are stored in the local server database
+  under each account. They are not shared or synchronized between accounts or
+  computers.
+- This server is configured for local use only. Before using real client
+  information, deploy it behind HTTPS with institution-managed hosting,
+  protected backups, access control, and a server-side data store reviewed for
+  your data protection needs.
