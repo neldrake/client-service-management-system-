@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#102a43">
+<title>Sign in | BIA West District Assembly - Client Service Management</title>
+<style>
+:root{--ink:#172b4d;--muted:#667085;--nav:#102a43;--blue:#2267a8;--line:#e4e9f0;--bg:#f4f7fb;--red:#b42318}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 85% 10%,#dcebf6 0,transparent 37%),var(--bg);color:var(--ink);font:14px/1.5 "Segoe UI",Arial,sans-serif;display:grid;place-items:center;padding:22px}
+.identity-logo{width:64px;height:64px;object-fit:contain;border-radius:12px;background:#fff;padding:4px}
+.identity-name{line-height:1.05}.identity-name strong{font-size:17px}.identity-name small{display:block;margin-top:6px;font-size:10px;line-height:1.25;text-transform:uppercase;letter-spacing:.04em}
+.layout{width:min(960px,100%);min-height:560px;display:grid;grid-template-columns:1.04fr .96fr;background:white;border-radius:22px;overflow:hidden;box-shadow:0 24px 70px #112c4518}
+.intro{background:var(--nav);color:white;padding:52px;display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden}.intro:after{content:"";position:absolute;width:370px;height:370px;border:1px solid #ffffff20;border-radius:50%;right:-185px;bottom:-170px;box-shadow:0 0 0 35px #ffffff08,0 0 0 75px #ffffff06}.brand{display:flex;align-items:center;gap:12px;position:relative;z-index:1}.mark{width:44px;height:44px;border-radius:13px;background:#d9f0ed;color:#0b6d68;display:grid;place-items:center;font-weight:800;font-size:19px}.brand strong{display:block;font-size:16px}.brand small{color:#abc0d0;font-size:12px}.intro-copy{position:relative;z-index:1;margin:40px 0}.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.15em;font-weight:700;color:#9ebbd0}.intro h1{font-size:34px;line-height:1.18;letter-spacing:-.04em;margin:15px 0}.intro p{max-width:380px;color:#c4d2de;margin:0}.foot{position:relative;z-index:1;color:#9db1c3;font-size:11px}.form-side{padding:55px 58px;display:flex;flex-direction:column;justify-content:center}.form-side h2{font-size:25px;letter-spacing:-.03em;margin:0 0 5px}.subtitle{color:var(--muted);margin:0 0 26px}.group{margin-bottom:16px}.group label{display:block;font-size:12px;font-weight:700;margin-bottom:6px}.field{width:100%;border:1px solid #d5dde7;border-radius:9px;padding:12px 12px;color:var(--ink);font:inherit;outline:none}.field:focus{border-color:#68a4d5;box-shadow:0 0 0 3px #2267a81a}.field::placeholder{color:#9aa7b5}.password-control{display:flex;gap:8px;align-items:center}.password-control .field{min-width:0;flex:1}.toggle-password{flex:none;padding:11px 12px;border:1px solid #d5dde7;border-radius:9px;background:#fff;color:#35566e;font:inherit;font-size:12px;font-weight:650;cursor:pointer}.toggle-password:hover{background:#f3f8fc;border-color:#9bb7ce}.toggle-password:focus-visible{outline:3px solid #2267a833;outline-offset:1px}.submit{width:100%;border:0;border-radius:9px;background:var(--blue);color:white;padding:12px;font:inherit;font-weight:700;margin-top:3px;cursor:pointer}.submit:hover{background:#19578f}.submit:disabled{opacity:.65;cursor:wait}.error{display:none;border:1px solid #f3c6c2;background:#fff2f0;color:var(--red);border-radius:8px;padding:10px 12px;font-size:12px;margin:0 0 14px}.error.show{display:block}.setup{display:none;border:1px solid #cfe0ee;background:#f3f8fc;color:#35566e;border-radius:9px;padding:12px;margin:0 0 16px;font-size:12px}.setup.show{display:block}.setup code{display:block;margin-top:7px;background:#e8f0f7;border-radius:5px;padding:7px;font:12px Consolas,monospace;overflow-wrap:anywhere}.hint{margin-top:20px;padding-top:17px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}.forgot{font-size:11px;color:var(--muted);margin-top:14px}
+@media(max-width:700px){body{padding:12px}.layout{grid-template-columns:1fr;min-height:unset}.intro{padding:25px 26px;min-height:230px}.intro-copy{margin:28px 0 16px}.intro h1{font-size:27px}.foot{display:none}.form-side{padding:30px 26px}.intro:after{width:250px;height:250px;right:-145px;bottom:-160px}}
+.auth-switch{display:flex;gap:8px;margin:0 0 20px;padding:4px;background:#f1f5f9;border-radius:10px}.auth-switch[hidden]{display:none}.auth-switch button{flex:1;border:0;border-radius:7px;background:transparent;color:var(--muted);padding:9px;font:inherit;font-weight:650;cursor:pointer}.auth-switch button.active{background:#fff;color:var(--ink);box-shadow:0 1px 4px #172b4d18}.signup-note{font-size:11px;color:var(--muted);margin:14px 0 0}
+</style>
+</head>
+<body>
+<main class="layout">
+  <section class="intro">
+    <div class="brand"><img class="identity-logo" src="/bia-west-district-assembly.jpg" alt="BIA West District Assembly logo"><div class="identity-name"><strong>BIA West District Assembly</strong><small>Client Service Management System</small></div></div>
+    <div class="intro-copy"><div class="eyebrow">Local Government Service</div><h1>Professional service starts with listening.</h1><p>Sign in to manage client visits, enquiries, requests, complaints, and feedback through the CSU workflow.</p></div>
+    <div class="foot">Client Service Unit · Secure sign-in</div>
+  </section>
+  <section class="form-side">
+    <h2 id="form-title">Welcome back</h2><p class="subtitle" id="form-subtitle">Sign in with your CSU username and password.</p>
+    <div class="auth-switch" id="auth-switch" role="tablist" aria-label="Account access" hidden><button type="button" class="active" data-auth-mode="login" role="tab" aria-selected="true">Sign in</button><button type="button" data-auth-mode="signup" role="tab" aria-selected="false">Create account</button></div>
+    <div class="error" id="error-message" role="alert"></div>
+    <form id="login-form" autocomplete="on">
+      <div class="group"><label for="username">Username</label><input id="username" class="field" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" maxlength="64" required placeholder="Enter your username"></div>
+      <div class="group"><label for="password">Password</label><div class="password-control"><input id="password" class="field" name="password" type="password" autocomplete="current-password" maxlength="1024" required placeholder="Enter your password"><button class="toggle-password" type="button" data-password-toggle="password" aria-controls="password" aria-pressed="false">Show</button></div></div>
+      <button class="submit" id="submit-button" type="submit">Sign in</button>
+    </form>
+    <form id="signup-form" autocomplete="on" hidden>
+      <div class="group"><label for="signup-name">Your name</label><input id="signup-name" class="field" name="display_name" type="text" autocomplete="name" maxlength="100" required placeholder="Name shown in the system"></div>
+      <div class="group"><label for="signup-username">Username</label><input id="signup-username" class="field" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="64" pattern="[A-Za-z0-9._@\x2D]{3,64}" required placeholder="Choose a username"></div>
+      <div class="group"><label for="signup-password">Create password</label><div class="password-control"><input id="signup-password" class="field" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required placeholder="At least 12 characters"><button class="toggle-password" type="button" data-password-toggle="signup-password" aria-controls="signup-password" aria-pressed="false">Show</button></div></div>
+      <div class="group"><label for="signup-confirmation">Confirm password</label><div class="password-control"><input id="signup-confirmation" class="field" name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required placeholder="Re-enter your password"><button class="toggle-password" type="button" data-password-toggle="signup-confirmation" aria-controls="signup-confirmation" aria-pressed="false">Show</button></div></div>
+      <button class="submit" id="signup-button" type="submit">Create account</button>
+      <p class="signup-note">New accounts receive staff access. The first DCD administrator account is created during system setup.</p>
+    </form>
+    <form id="setup-form" autocomplete="on" hidden>
+      <div class="group"><label for="operator-name">Your name</label><input id="operator-name" class="field" name="display_name" type="text" autocomplete="name" maxlength="100" required placeholder="Name shown in the system"></div>
+      <div class="group"><label for="operator-username">DCD administrator username</label><input id="operator-username" class="field" name="username" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" minlength="3" maxlength="64" pattern="[A-Za-z0-9._@\x2D]{3,64}" required placeholder="Choose a username"></div>
+      <div class="group"><label for="operator-password">Create password</label><div class="password-control"><input id="operator-password" class="field" name="password" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required placeholder="At least 12 characters"><button class="toggle-password" type="button" data-password-toggle="operator-password" aria-controls="operator-password" aria-pressed="false">Show</button></div></div>
+      <div class="group"><label for="operator-confirmation">Confirm password</label><div class="password-control"><input id="operator-confirmation" class="field" name="confirmation" type="password" autocomplete="new-password" minlength="12" maxlength="1024" required placeholder="Re-enter your password"><button class="toggle-password" type="button" data-password-toggle="operator-confirmation" aria-controls="operator-confirmation" aria-pressed="false">Show</button></div></div>
+      <button class="submit" id="setup-button" type="submit">Create DCD administrator account</button>
+      <p class="forgot">This one-time setup is only available until the first DCD administrator account is created.</p>
+    </form>
+    <div class="hint">Sign-in is verified by the CSU local server. Keep your password private.</div>
+    <div class="forgot">Forgot your password? Ask the DCD administrator to reset your account credentials.</div>
+  </section>
+</main>
+<script>
+const errorMessage=document.getElementById("error-message");
+const form=document.getElementById("login-form");
+const setupForm=document.getElementById("setup-form");
+const signupForm=document.getElementById("signup-form");
+const submitButton=document.getElementById("submit-button");
+const setupButton=document.getElementById("setup-button");
+const signupButton=document.getElementById("signup-button");
+const formTitle=document.getElementById("form-title");
+const formSubtitle=document.getElementById("form-subtitle");
+const authSwitch=document.getElementById("auth-switch");
+function showAuthMode(mode){
+  const signingUp=mode==="signup";
+  form.hidden=signingUp;
+  signupForm.hidden=!signingUp;
+  formTitle.textContent=signingUp?"Create your account":"Welcome back";
+  formSubtitle.textContent=signingUp?"Register for staff access to the CSU system.":"Sign in with your CSU username and password.";
+  document.querySelectorAll("[data-auth-mode]").forEach(button=>{
+    const active=button.dataset.authMode===mode;
+    button.classList.toggle("active",active);
+    button.setAttribute("aria-selected",String(active));
+  });
+  errorMessage.classList.remove("show");
+}
+authSwitch.addEventListener("click",event=>{
+  const button=event.target.closest("[data-auth-mode]");
+  if(button)showAuthMode(button.dataset.authMode);
+});
+fetch("/api/session",{credentials:"same-origin",cache:"no-store"})
+  .then(response=>{if(!response.ok)throw new Error("The CSU server is not available.");return response.json()})
+  .then(session=>{if(session.authenticated){window.location.replace("/");return}if(!session.configured){form.hidden=true;signupForm.hidden=true;authSwitch.hidden=true;setupForm.hidden=false;formTitle.textContent="Set up the DCD administrator";formSubtitle.textContent="Create the first DCD account to start using the CSU system."}else{authSwitch.hidden=false}})
+  .catch(()=>{errorMessage.textContent="Open the CSU system with start-csu.bat so the sign-in server can verify your account.";errorMessage.classList.add("show")});
+document.querySelectorAll("[data-password-toggle]").forEach(button=>button.addEventListener("click",()=>{
+  const field=document.getElementById(button.dataset.passwordToggle);
+  const showing=field.type==="password";
+  field.type=showing?"text":"password";
+  button.textContent=showing?"Hide":"Show";
+  button.setAttribute("aria-pressed",String(showing));
+}));
+form.addEventListener("submit",async event=>{
+  event.preventDefault();
+  errorMessage.classList.remove("show");
+  submitButton.disabled=true;
+  submitButton.textContent="Signing in…";
+  try{
+    const response=await fetch("/api/login",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:form.elements.username.value,password:form.elements.password.value})});
+    const result=await response.json();
+    if(!response.ok)throw new Error(result.error||"Unable to sign in.");
+    form.elements.password.value="";
+    window.location.assign("/");
+  }catch(error){
+    errorMessage.textContent=error.message||"Unable to sign in. Try again.";
+    errorMessage.classList.add("show");
+  }finally{
+    submitButton.disabled=false;
+    submitButton.textContent="Sign in";
+  }
+});
+signupForm.addEventListener("submit",async event=>{
+  event.preventDefault();
+  errorMessage.classList.remove("show");
+  signupButton.disabled=true;
+  signupButton.textContent="Creating account…";
+  try{
+    const response=await fetch("/api/signup",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:signupForm.elements.username.value,display_name:signupForm.elements.display_name.value,password:signupForm.elements.password.value,confirmation:signupForm.elements.confirmation.value})});
+    const result=await response.json();
+    if(!response.ok)throw new Error(result.error||"Unable to create your account.");
+    signupForm.elements.password.value="";
+    signupForm.elements.confirmation.value="";
+    window.location.assign("/");
+  }catch(error){
+    errorMessage.textContent=error.message||"Unable to create your account. Try again.";
+    errorMessage.classList.add("show");
+  }finally{
+    signupButton.disabled=false;
+    signupButton.textContent="Create account";
+  }
+});
+setupForm.addEventListener("submit",async event=>{
+  event.preventDefault();
+  errorMessage.classList.remove("show");
+  setupButton.disabled=true;
+  setupButton.textContent="Creating account…";
+  try{
+    const response=await fetch("/api/setup",{method:"POST",credentials:"same-origin",cache:"no-store",headers:{"Content-Type":"application/json"},body:JSON.stringify({username:setupForm.elements.username.value,display_name:setupForm.elements.display_name.value,password:setupForm.elements.password.value,confirmation:setupForm.elements.confirmation.value})});
+    const result=await response.json();
+    if(!response.ok)throw new Error(result.error||"Unable to create the DCD administrator account.");
+    setupForm.elements.password.value="";
+    setupForm.elements.confirmation.value="";
+    window.location.assign("/");
+  }catch(error){
+    errorMessage.textContent=error.message||"Unable to create the DCD administrator account.";
+    errorMessage.classList.add("show");
+  }finally{
+    setupButton.disabled=false;
+    setupButton.textContent="Create DCD administrator account";
+  }
+});
+</script>
+</body>
+</html>
