@@ -39,6 +39,11 @@ Case progression:
   Reports, and the Excel case register use that date; "Resolved this month"
   counts only cases whose current status is Resolved and whose resolution date
   falls within the current month. Closed cases are not included.
+- In the Case register, use View to inspect a case's saved details and Download
+  all cases to save the case register as an Excel workbook. Each case row also
+  has its own Excel download. Search and filters can help locate a case first.
+- The full Excel workbook remains available from Reports & export and includes
+  the account's case, visitor, feedback, and schedule registers.
 
 After a client submits the Appendix F satisfaction form, the CSU Feedback
 Assistant displays an automated in-app acknowledgement. Staff can reopen it

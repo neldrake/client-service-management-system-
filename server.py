@@ -27,9 +27,12 @@ from pathlib import Path
 from urllib.parse import urlsplit
 
 try:
-    from openpyxl import load_workbook
+    from openpyxl import Workbook, load_workbook
+    from openpyxl.styles import Font
 except ImportError:
+    Workbook = None
     load_workbook = None
+    Font = None
 
 
 ROOT = Path(__file__).resolve().parent
@@ -312,6 +315,73 @@ def append_register_sheet(workbook, title, headers, rows):
         sheet.append(row)
     sheet.freeze_panes = "A2"
     sheet.auto_filter.ref = sheet.dimensions
+
+
+CASE_WORKBOOK_COLUMNS = [
+    ("Reference", "id"),
+    ("Type", "type"),
+    ("Received date", "date"),
+    ("Client / institution", "client"),
+    ("Contact details", "contact"),
+    ("Registered email", "email"),
+    ("Age bracket", "age"),
+    ("Gender", "gender"),
+    ("Disability", "disability"),
+    ("Disability type", "disabilityType"),
+    ("District", "district"),
+    ("Community / location", "location"),
+    ("Channel", "channel"),
+    ("Department / Unit", "department"),
+    ("Action officer", "officer"),
+    ("Follow-up due date", "due"),
+    ("Resolved date", "resolvedDate"),
+    ("Closed date", "closedDate"),
+    ("Status", "status"),
+    ("Preferred feedback method", "feedbackMethod"),
+    ("Brief", "summary"),
+    ("Actions / updates", "actions"),
+    ("Outcome / remarks", "remarks"),
+    ("Client signature", "signature-case-client-text"),
+    ("CSU officer signature", "signature-case-csu-officer-text"),
+    ("Administrative head signature", "signature-case-administrative-head-text"),
+    ("Action officer signature", "signature-case-action-officer-text"),
+    ("Created", "created"),
+    ("Last updated", "updated"),
+]
+
+
+def create_case_workbook(cases):
+    if Workbook is None:
+        raise RuntimeError("The Excel export dependency is not installed.")
+
+    workbook = Workbook()
+    sheet = workbook.active
+    sheet.title = "Case Register"
+    sheet.append([label for label, _key in CASE_WORKBOOK_COLUMNS])
+    for case in cases:
+        values = []
+        for _label, key in CASE_WORKBOOK_COLUMNS:
+            value = case.get(key)
+            if key == "resolvedDate" and not value and case.get("status") == "Resolved":
+                value = case.get("closedDate") or case.get("updated") or case.get("date")
+            values.append(
+                json.dumps(value, ensure_ascii=False)
+                if isinstance(value, (dict, list))
+                else "" if value is None
+                else str(value)
+            )
+        sheet.append(values)
+    for cell in sheet[1]:
+        cell.font = Font(bold=True)
+    for row in sheet.iter_rows():
+        for cell in row:
+            if isinstance(cell.value, str):
+                cell.data_type = "s"
+    sheet.freeze_panes = "A2"
+    sheet.auto_filter.ref = sheet.dimensions
+    output = io.BytesIO()
+    workbook.save(output)
+    return output.getvalue()
 
 
 def create_export_workbook(payload):
@@ -721,6 +791,7 @@ class CSURequestHandler(BaseHTTPRequestHandler):
             "/api/signup",
             "/api/data",
             "/api/export-workbook",
+            "/api/export-cases-workbook",
             "/api/feedback/website",
             "/api/admin/feedback/invite",
             "/api/public-feedback/submit",
@@ -745,6 +816,8 @@ class CSURequestHandler(BaseHTTPRequestHandler):
             self.handle_data()
         elif path == "/api/export-workbook":
             self.handle_export_workbook()
+        elif path == "/api/export-cases-workbook":
+            self.handle_export_cases_workbook()
         elif path == "/api/feedback/website":
             self.handle_feedback_website()
         else:
@@ -1125,6 +1198,69 @@ class CSURequestHandler(BaseHTTPRequestHandler):
             self.send_json(500, {"error": str(exc)})
             return
         filename = f"CSU-Client-Service-Management-{datetime.now().strftime('%Y-%m-%d')}.xlsx"
+        self.send_response(200)
+        self.send_security_headers()
+        self.send_header(
+            "Content-Type",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        )
+        self.send_header("Content-Disposition", f'attachment; filename="{filename}"')
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("Content-Length", str(len(content)))
+        self.end_headers()
+        self.wfile.write(content)
+
+    def handle_export_cases_workbook(self):
+        user = self.authenticated_user()
+        if not user:
+            self.send_json(401, {"error": "Sign in required."})
+            return
+
+        data = None
+        if self.headers.get("Content-Length", "0") != "0":
+            data = self.read_json()
+            if not data:
+                self.send_json(400, {"error": "The case export request is invalid."})
+                return
+        case_id = data.get("case_id") if data else None
+        if data and (
+            not isinstance(case_id, str)
+            or not case_id.strip()
+        ):
+            self.send_json(400, {"error": "Choose a case to export."})
+            return
+
+        with connect_db() as db:
+            row = db.execute(
+                "SELECT payload FROM user_data WHERE user_id = ?",
+                (user["id"],),
+            ).fetchone()
+        try:
+            payload = json.loads(row["payload"]) if row else {}
+        except (json.JSONDecodeError, TypeError):
+            self.send_json(500, {"error": "The saved case register could not be read."})
+            return
+        if not isinstance(payload, dict):
+            self.send_json(500, {"error": "The saved case register is invalid."})
+            return
+        cases = payload.get("cases") or []
+        if not isinstance(cases, list) or any(not isinstance(item, dict) for item in cases):
+            self.send_json(500, {"error": "The saved case register is invalid."})
+            return
+        if case_id is not None:
+            case = next((item for item in cases if item.get("id") == case_id), None)
+            if not case:
+                self.send_json(404, {"error": "That case could not be found in your register."})
+                return
+            cases = [case]
+
+        try:
+            content = create_case_workbook(cases)
+        except (OSError, RuntimeError, TypeError, ValueError) as exc:
+            self.send_json(500, {"error": str(exc)})
+            return
+        suffix = re.sub(r"[^A-Za-z0-9._-]", "_", case_id) if case_id else "Register"
+        filename = f"CSU-Cases-{suffix}-{datetime.now().strftime('%Y-%m-%d')}.xlsx"
         self.send_response(200)
         self.send_security_headers()
         self.send_header(
